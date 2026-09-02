@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title}">CYBER//STREAM 2077</title>
+    <meta name="description" content="Cyberpunk 2077 YouTube proxy streaming engine. Neural link, chunked byte-range proxy, zero restrictions."/>
+    <!-- Cyberpunk 2077 Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+</head>
+<body>
+
+    <!-- Cyberpunk HUD Navbar Fragment -->
+    <nav th:fragment="navbar" class="navbar" id="navbar">
+        <div class="nav-hud-left">
+            <a th:href="@{/}" class="logo" id="logo-btn">
+                <div class="logo-cyber-icon">
+                    <span class="icon-symbol">▲</span>
+                </div>
+                <div class="logo-text-wrap">
+                    <span class="logo-text">CYBER//STREAM</span>
+                    <span class="logo-subtext">NC-OS v2.077</span>
+                </div>
+            </a>
+            <div class="nav-status-chip">
+                <span class="pulse-dot"></span>
+                <span class="chip-text">NET.LINK // OK</span>
+            </div>
+        </div>
+
+        <div class="search-container" id="search-container">
+            <form th:action="@{/search}" method="get" class="search-wrapper" id="search-form">
+                <div class="search-prefix">INPUT://</div>
+                <input
+                    type="text"
+                    name="q"
+                    class="search-input"
+                    id="search-input"
+                    th:value="${query}"
+                    placeholder="Search neural video matrix..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    required
+                />
+                <button type="button" class="search-clear" id="search-clear" title="Clear query">[CLEAR]</button>
+                <button type="submit" class="search-btn" id="search-btn" title="Execute Query">
+                    <span class="search-btn-text">SCAN</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+            </form>
+            <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
+        </div>
+
+        <div class="nav-hud-right">
+            <div class="cyber-badge-node">PROXY: ACTIVE</div>
+            <div class="cyber-badge-port">SYS://8080</div>
+        </div>
+    </nav>
+
+</body>
+</html>

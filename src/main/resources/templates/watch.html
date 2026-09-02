@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('FEED:// ' + ${video.title} + ' — CYBER//STREAM')}"></head>
+<body class="cyber-body">
+    <div class="cyber-grid-overlay"></div>
+    <div class="cyber-scanlines"></div>
+
+    <div class="app">
+        <!-- Shared Cyber Navbar -->
+        <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="player-view active" id="player-view">
+                <div class="player-layout">
+                    <!-- Main Player Area -->
+                    <div class="player-main">
+                        <!-- HUD Target Header -->
+                        <div class="player-hud-header">
+                            <span class="hud-tag">// STREAM.FEED</span>
+                            <span class="hud-res" th:text="'TARGET.ID://' + ${video.id}">TARGET.ID://v-0</span>
+                            <span class="hud-status">[NEURAL_LINK: STABLE]</span>
+                        </div>
+
+                        <!-- Video Player Frame with Cyber Corners -->
+                        <div class="video-player-container cyber-player-frame" id="video-player-container">
+                            <video id="video-player"
+                                   controls
+                                   autoplay
+                                   playsinline
+                                   preload="metadata"
+                                   crossorigin="anonymous"
+                                   th:src="@{/api/stream/{id}(id=${video.id})}">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="player-loading-overlay cyber-loading" id="player-loading" style="display:flex;">
+                                <div class="cyber-spinner"></div>
+                                <div class="loading-text">DECRYPTING NEURAL STREAM CHUNKS...</div>
+                            </div>
+                            <div class="cyber-corner tl"></div>
+                            <div class="cyber-corner tr"></div>
+                            <div class="cyber-corner bl"></div>
+                            <div class="cyber-corner br"></div>
+                        </div>
+
+                        <!-- Cyberpunk Braindance Audio Studio Bar -->
+                        <div class="audio-studio-bar cyber-bar" id="audio-studio-bar">
+                            <div class="studio-left">
+                                <button type="button" class="studio-btn cyber-btn active" id="toggle-visualizer-btn" title="Toggle Visualizer">
+                                    <span class="studio-icon">⚡</span>
+                                    <span>VISUALIZER</span>
+                                </button>
+                                
+                                <div class="vis-mode-group cyber-group" id="vis-mode-group">
+                                    <button type="button" class="mode-pill active" data-mode="bars">BARS</button>
+                                    <button type="button" class="mode-pill" data-mode="wave">WAVE</button>
+                                    <button type="button" class="mode-pill" data-mode="radial">RADIAL</button>
+                                </div>
+
+                                <div class="vis-theme-group" id="vis-theme-group">
+                                    <button type="button" class="theme-dot active" data-theme="neon" title="Night City Cyan / Pink" style="background: linear-gradient(135deg, #00f0ff, #ff0055);"></button>
+                                    <button type="button" class="theme-dot" data-theme="sunset" title="Kiroshi Yellow / Orange" style="background: linear-gradient(135deg, #fcee0a, #ff003c);"></button>
+                                    <button type="button" class="theme-dot" data-theme="matrix" title="Netrunner Emerald" style="background: linear-gradient(135deg, #00ff66, #00f0ff);"></button>
+                                </div>
+                            </div>
+
+                            <div class="studio-right">
+                                <button type="button" class="studio-btn cyber-btn" id="toggle-equalizer-btn" title="Toggle Braindance DSP Equalizer">
+                                    <span class="studio-icon">🎛️</span>
+                                    <span>BRAINDANCE DSP</span>
+                                    <span class="eq-status-badge cyber-badge" id="eq-status-badge">ACTIVE</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Audio Visualizer Canvas -->
+                        <div class="visualizer-container cyber-vis-frame" id="visualizer-container">
+                            <canvas id="visualizer-canvas"></canvas>
+                            <div class="vis-hud-watermark">SPECTRAL.ANALYZER // 256.BINS</div>
+                        </div>
+
+                        <!-- 8-Band Cyberpunk Equalizer Deck -->
+                        <div class="equalizer-panel cyber-eq-panel" id="equalizer-panel">
+                            <div class="eq-header">
+                                <div class="eq-title-wrap">
+                                    <div class="eq-icon">⚡</div>
+                                    <div>
+                                        <div class="eq-title">PARAMETRIC 8-BAND CYBER-DSP</div>
+                                        <div class="eq-subtitle">AUDIO HARMONICS &amp; BASS BOOST CONTROL</div>
+                                    </div>
+                                </div>
+
+                                <div class="eq-actions">
+                                    <div class="eq-preset-select-wrap">
+                                        <label for="eq-presets">PROFILE:</label>
+                                        <select id="eq-presets" class="eq-select cyber-select">
+                                            <option value="flat">Kiroshi Standard (Flat)</option>
+                                            <option value="bass">Pacifica Heavy Bass</option>
+                                            <option value="lofi">Afterlife Lofi &amp; Chill</option>
+                                            <option value="vocal">Arasaka Dialogue Focus</option>
+                                            <option value="electronic">Netrunner Synthwave</option>
+                                            <option value="rock">Johnny Silverhand Rock</option>
+                                            <option value="acoustic">Nomad Camp Acoustic</option>
+                                            <option value="treble">Watson Treble Spark</option>
+                                        </select>
+                                    </div>
+
+                                    <button type="button" class="eq-btn-secondary cyber-btn-sm" id="eq-reset-btn" title="Reset all sliders to 0 dB">[RESET]</button>
+
+                                    <label class="eq-toggle-switch cyber-switch" title="Enable or bypass Equalizer">
+                                        <input type="checkbox" id="eq-bypass-checkbox" checked>
+                                        <span class="switch-slider"></span>
+                                        <span class="switch-label">DSP_ON</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Sliders Grid -->
+                            <div class="eq-body">
+                                <div class="eq-bands-container" id="eq-bands-container">
+                                    <!-- Band 60Hz -->
+                                    <div class="eq-slider-col" data-band="0">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-0">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-0" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">60Hz</span>
+                                        <span class="eq-type-label">SUB</span>
+                                    </div>
+
+                                    <!-- Band 150Hz -->
+                                    <div class="eq-slider-col" data-band="1">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-1">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-1" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">150Hz</span>
+                                        <span class="eq-type-label">BASS</span>
+                                    </div>
+
+                                    <!-- Band 400Hz -->
+                                    <div class="eq-slider-col" data-band="2">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-2">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-2" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">400Hz</span>
+                                        <span class="eq-type-label">L-MID</span>
+                                    </div>
+
+                                    <!-- Band 1kHz -->
+                                    <div class="eq-slider-col" data-band="3">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-3">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-3" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">1kHz</span>
+                                        <span class="eq-type-label">MID</span>
+                                    </div>
+
+                                    <!-- Band 2.4kHz -->
+                                    <div class="eq-slider-col" data-band="4">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-4">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-4" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">2.4k</span>
+                                        <span class="eq-type-label">H-MID</span>
+                                    </div>
+
+                                    <!-- Band 6kHz -->
+                                    <div class="eq-slider-col" data-band="5">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-5">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-5" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">6kHz</span>
+                                        <span class="eq-type-label">PRES</span>
+                                    </div>
+
+                                    <!-- Band 12kHz -->
+                                    <div class="eq-slider-col" data-band="6">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-6">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-6" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">12kHz</span>
+                                        <span class="eq-type-label">TREB</span>
+                                    </div>
+
+                                    <!-- Band 16kHz -->
+                                    <div class="eq-slider-col" data-band="7">
+                                        <span class="eq-gain-val cyber-gain" id="gain-val-7">0 dB</span>
+                                        <div class="eq-track-wrap">
+                                            <input type="range" class="eq-slider cyber-slider" id="eq-slider-7" min="-12" max="12" step="0.5" value="0" orient="vertical"/>
+                                        </div>
+                                        <span class="eq-freq-label">16kHz</span>
+                                        <span class="eq-type-label">AIR</span>
+                                    </div>
+                                </div>
+
+                                <!-- Preamp Column -->
+                                <div class="eq-preamp-wrap">
+                                    <span class="eq-preamp-title">PREAMP</span>
+                                    <div class="eq-track-wrap">
+                                        <input type="range" class="eq-slider preamp-slider cyber-slider" id="eq-preamp-slider" min="0.5" max="2.0" step="0.05" value="1.0" orient="vertical"/>
+                                    </div>
+                                    <span class="eq-gain-val cyber-gain" id="preamp-val">1.0x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Metadata Area -->
+                        <div class="video-info cyber-info-frame" id="video-info">
+                            <h1 class="video-title cyber-video-title" id="player-title" th:text="${video.title}">Video Title</h1>
+                            
+                            <div class="video-stats-row cyber-stats-row">
+                                <div class="video-stats">
+                                    <div class="video-stat cyber-stat" id="player-views">
+                                        <span class="stat-prefix">VIEWS://</span>
+                                        <span th:text="${video.views}">100K views</span>
+                                    </div>
+                                    <div class="video-stat cyber-stat" id="player-likes" th:if="${video.likes != null and !video.likes.isEmpty()}">
+                                        <span class="stat-prefix">RATING://</span>
+                                        <span th:text="${video.likes}">5K</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="video-channel-row cyber-channel-row" id="player-channel-row">
+                                <div class="channel-avatar-lg cyber-avatar-lg">
+                                    <div class="avatar-fallback" th:text="${#strings.substring(video.channel, 0, 1)}">Y</div>
+                                </div>
+                                <div class="channel-name-lg cyber-channel-text" id="player-channel" th:text="${video.channel}">Channel Name</div>
+                            </div>
+
+                            <div class="video-description cyber-desc-box" id="player-description-box" th:if="${video.description != null and !video.description.isEmpty()}">
+                                <div class="video-description-text" id="player-description" th:text="${video.description}">Video description text...</div>
+                                <span class="desc-toggle cyber-toggle" id="desc-toggle">[EXPAND DATA]</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar: Related Neural Feeds -->
+                    <div class="player-sidebar cyber-sidebar">
+                        <div class="sidebar-title cyber-sidebar-title">// RELATED SIGNALS</div>
+                        <div class="related-list" id="related-list">
+                            <a th:each="rel : ${video.related}" class="related-card cyber-related-card" th:href="@{/watch(v=${rel.id})}">
+                                <div class="related-thumbnail cyber-thumbnail">
+                                    <img th:src="${rel.thumbnail}" th:alt="${rel.title}" loading="lazy" onerror="this.style.display='none'"/>
+                                    <div th:if="${rel.duration != null and !rel.duration.isEmpty()}" class="related-duration cyber-duration" th:text="${rel.duration}">0:00</div>
+                                </div>
+                                <div class="related-info">
+                                    <div class="related-title cyber-rel-title" th:text="${rel.title}">Related Video Title</div>
+                                    <div class="related-meta cyber-rel-meta">
+                                        <div th:text="${rel.channel}">Channel</div>
+                                        <div class="cyber-highlight-cyan" th:text="${rel.views}">Views</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

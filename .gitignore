@@ -1,0 +1,23 @@
+# Maven build output
+target/
+*.jar
+!yt-stream.jar
+
+# Binaries
+bin/
+*.exe
+
+# IDE configs
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

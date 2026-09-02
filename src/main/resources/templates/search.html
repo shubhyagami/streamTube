@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('SCAN:// ' + ${query} + ' — CYBER//STREAM')}"></head>
+<body class="cyber-body">
+    <div class="cyber-grid-overlay"></div>
+    <div class="cyber-scanlines"></div>
+
+    <div class="app">
+        <!-- Shared Cyber Navbar -->
+        <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Results Section -->
+            <div id="results-section">
+                <div class="section-header-cyber">
+                    <div class="section-title-wrap">
+                        <span class="cyber-accent-bar"></span>
+                        <h2>SCAN RESULTS // "<span th:text="${query}" class="highlight-yellow">query</span>"</h2>
+                    </div>
+                    <div class="cyber-chip" th:text="'MATCHES://' + ${#lists.size(results)} + '_RECORDS'">MATCHES://0</div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="cyber-empty-state" th:if="${#lists.isEmpty(results)}">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">NO SIGNALS DETECTED</div>
+                    <div class="empty-subtitle">Target frequency empty. Try adjusting your query parameters.</div>
+                </div>
+
+                <!-- Video Grid -->
+                <div class="video-grid" th:unless="${#lists.isEmpty(results)}">
+                    <a th:each="video : ${results}" class="cyber-card" th:href="@{/watch(v=${video.id})}">
+                        <div class="cyber-card-frame">
+                            <div class="card-thumbnail">
+                                <img th:src="${video.thumbnail}" th:alt="${video.title}" loading="lazy" onerror="this.style.display='none'"/>
+                                <div class="card-play-overlay">
+                                    <div class="cyber-play-btn">▶</div>
+                                </div>
+                                <div th:if="${video.duration != null and !video.duration.isEmpty()}" class="cyber-duration" th:text="${video.duration}">0:00</div>
+                                <div class="cyber-corner tl"></div>
+                                <div class="cyber-corner tr"></div>
+                                <div class="cyber-corner bl"></div>
+                                <div class="cyber-corner br"></div>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-channel-avatar cyber-avatar">
+                                    <img th:if="${video.channelThumbnail != null and !video.channelThumbnail.isEmpty()}" th:src="${video.channelThumbnail}" alt="" loading="lazy" onerror="this.style.display='none'"/>
+                                    <div th:if="${video.channelThumbnail == null or video.channelThumbnail.isEmpty()}" class="avatar-fallback" th:text="${#strings.substring(video.channel, 0, 1)}">Y</div>
+                                </div>
+                                <div class="card-details">
+                                    <div class="cyber-card-title" th:text="${video.title}">Video Title</div>
+                                    <div class="card-meta">
+                                        <span class="cyber-channel-name" th:text="${video.channel}">Channel Name</span>
+                                        <div class="cyber-stats">
+                                            <span class="stat-views" th:text="${video.views}">1M views</span>
+                                            <span class="stat-divider" th:if="${video.published != null and !video.published.isEmpty()}">//</span>
+                                            <span class="stat-date" th:if="${video.published != null and !video.published.isEmpty()}" th:text="${video.published}">1 day ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
