@@ -8,6 +8,10 @@ RUN mvn package -DskipTests -B
 
 # Stage 2: Run
 FROM eclipse-temurin:17-jre-alpine
+
+RUN apk add --no-cache ffmpeg python3 py3-pip
+RUN pip3 install --break-system-packages yt-dlp
+
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
