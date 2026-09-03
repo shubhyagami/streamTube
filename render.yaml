@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: yt-stream
+    runtime: docker
+    dockerfilePath: Dockerfile
+    port: 8080
+    healthCheckPath: /
