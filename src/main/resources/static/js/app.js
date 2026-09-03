@@ -131,6 +131,11 @@ function initPlayer() {
     if (!video || !loadingOverlay) return;
 
     const loadingText = loadingOverlay.querySelector('.loading-text');
+    const videoId = video.dataset.videoId;
+
+    if (videoId) {
+        loadVideoAsBlob(video, videoId, loadingOverlay, loadingText);
+    }
 
     video.addEventListener('loadstart', () => {
         loadingOverlay.style.display = 'flex';
@@ -158,6 +163,53 @@ function initPlayer() {
         console.error('Video error:', video.error);
         if (loadingText) loadingText.textContent = 'Unable to play stream. Retrying...';
     });
+}
+
+async function loadVideoAsBlob(video, videoId, loadingOverlay, loadingText) {
+    try {
+        if (loadingText) loadingText.textContent = 'Extracting stream URL...';
+        loadingOverlay.style.display = 'flex';
+
+        const res = await fetch(`/api/stream-url/${videoId}`);
+        if (!res.ok) throw new Error('Failed to get stream URL');
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        if (loadingText) loadingText.textContent = 'Downloading stream to browser...';
+
+        const streamRes = await fetch(data.url);
+        if (!streamRes.ok) throw new Error('Failed to fetch stream');
+
+        const contentLength = streamRes.headers.get('Content-Length');
+        const total = contentLength ? parseInt(contentLength, 10) : 0;
+        const reader = streamRes.body.getReader();
+        const chunks = [];
+        let received = 0;
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            received += value.length;
+            if (total > 0 && loadingText) {
+                const pct = Math.round((received / total) * 100);
+                loadingText.textContent = `Downloading... ${pct}%`;
+            }
+        }
+
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        const blobUrl = URL.createObjectURL(blob);
+        video.src = blobUrl;
+
+        video.addEventListener('error', () => {
+            URL.revokeObjectURL(blobUrl);
+        }, { once: true });
+
+    } catch (err) {
+        console.error('Blob load failed, falling back to proxy:', err);
+        if (loadingText) loadingText.textContent = 'Loading via proxy...';
+        video.src = `/api/stream/${videoId}`;
+    }
 }
 
 // ===== Audio Studio: Equalizer & Visualizer =====

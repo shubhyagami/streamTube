@@ -30,7 +30,7 @@
                                    playsinline
                                    preload="metadata"
                                    crossorigin="anonymous"
-                                   th:src="@{/api/stream/{id}(id=${video.id})}">
+                                   th:data-video-id="${video.id}">
                                 Your browser does not support the video tag.
                             </video>
                             <div class="player-loading-overlay cyber-loading" id="player-loading" style="display:flex;">

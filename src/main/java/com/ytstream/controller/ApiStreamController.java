@@ -24,7 +24,20 @@ public class ApiStreamController {
     }
 
     /**
-     * Stream chunk endpoint with HTTP Range support
+     * Returns the direct stream URL as JSON for client-side blob playback
+     */
+    @GetMapping("/stream-url/{id}")
+    public ResponseEntity<Map<String, String>> getStreamUrl(@PathVariable("id") String id) {
+        try {
+            String url = streamProxyService.extractStreamUrl(id).get();
+            return ResponseEntity.ok(Map.of("url", url));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Proxy endpoint that streams video chunks with Range support (fallback)
      */
     @GetMapping("/stream/{id}")
     public void streamVideo(@PathVariable("id") String id, HttpServletRequest request, HttpServletResponse response) {
